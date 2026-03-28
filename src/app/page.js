@@ -1,30 +1,26 @@
-import Link from "next/link";
-
 export const dynamic = 'force-dynamic';
 
-export default async function HomePage() {
-  const res = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=5', {
+export default async function ProductsPage() {
+  const res = await fetch('https://fakestoreapi.com/products?limit=5', {
     cache: 'no-store'
   });
   
-  const posts = await res.json();
+  if (!res.ok) {
+    return <div>Failed to load products</div>;
+  }
+
+  const products = await res.json();
 
   return (
     <main style={{ padding: "20px" }}>
-      <h1>My Awesome Blog</h1>
-      
-      <div>
-        {posts.map((post) => (
-          <div key={post.id} style={{ border: "1px solid #ccc", padding: "10px", marginBottom: "10px" }}>
-            <h3>{post.title}</h3>
-            <p>{post.body}</p>            
-            <br />
-            <Link href={`/posts/${post.id}`} style={{ color: "blue", textDecoration: "underline" }}>
-              Read More
-            </Link>
-          </div>
+      <h1>Our Products</h1>
+      <ul>
+        {products.map((product) => (
+          <li key={product.id} style={{ marginBottom: "10px" }}>
+            <strong>{product.title}</strong> - ${product.price}
+          </li>
         ))}
-      </div>
+      </ul>
     </main>
   );
 }

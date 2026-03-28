@@ -1,39 +1,41 @@
-// app/posts/[id]/page.jsx
 import { notFound } from "next/navigation";
+
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
   
-  const res = await fetch('http://localhost:3000/api/posts');
-  const posts = await res.json();
-  const post = posts.find((p) => p.id == resolvedParams.id);
-
-  if (!post) return { title: "Post Not Found" };
-
-  return {
-    title: post.title,
-    description: post.content.substring(0, 50),
-  };
+  try {
+    const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${resolvedParams.id}`);
+    if (!res.ok) return { title: "Post Not Found" };
+    const post = await res.json();
+    
+    return {
+      title: post.title,
+      description: post.body.substring(0, 50),
+    };
+  } catch (error) {
+    return { title: "Error" };
+  }
 }
 
 export default async function PostPage({ params }) {
   const resolvedParams = await params;
 
-  const res = await fetch('http://localhost:3000/api/posts', {
+  const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${resolvedParams.id}`, {
     cache: 'no-store'
   });
-  const posts = await res.json();
-  
-  const post = posts.find((p) => p.id == resolvedParams.id);
 
-  if (!post) {
-    return notFound(); 
+  if (!res.ok) {
+    return notFound();
   }
+  
+  const post = await res.json();
 
   return (
     <main style={{ padding: "20px", maxWidth: "600px" }}>
       <h1 style={{ color: "darkblue" }}>{post.title}</h1>
-      <p style={{ lineHeight: "1.6", fontSize: "18px" }}>{post.content}</p>
+      <p style={{ lineHeight: "1.6", fontSize: "18px" }}>{post.body}</p>
       
       <br />
       <a href="/" style={{ color: "red", textDecoration: "underline" }}>

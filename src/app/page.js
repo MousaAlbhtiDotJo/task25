@@ -1,9 +1,5 @@
-export const dynamic = 'force-dynamic';
-
 export default async function ProductsPage() {
-  const res = await fetch('https://fakestoreapi.com/products?limit=5', {
-    cache: 'no-store'
-  });
+  const res = await fetch('https://fakestoreapi.com/products?limit=5');
   
   if (!res.ok) {
     return <div>Failed to load products</div>;
